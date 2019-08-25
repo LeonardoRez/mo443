@@ -1,2 +1,6 @@
 #ignore virtual setup
 virtual/*
+./*.gz
+listas/*
+pirata/*
+
