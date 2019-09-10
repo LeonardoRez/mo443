@@ -4,3 +4,5 @@ virtual/*
 listas/*
 pirata/*
 
+#vim temp files
+**.swp
