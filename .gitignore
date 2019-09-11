@@ -6,3 +6,18 @@ pirata/*
 
 #vim temp files
 **.swp
+
+#inputs
+!baboon.png
+!baboon_colored.png
+!**butterfly.png
+!**city.png
+!**house.png
+!**monalisa_colored.png
+!**peppers_colored.png
+!**seagull.png
+!**watch_colored.png
+
+
+#results
+**.png
