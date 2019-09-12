@@ -43,17 +43,11 @@ def error_diffusion(img, kernel, alternate=False):
 
 
 def test(img_path, kernel, label):
-    img = cv2.imread(img_path)
-    img[:,:,0] = error_diffusion(img[:,:,0], kernel)
-    img[:,:,1] = error_diffusion(img[:,:,1], kernel)
-    img[:,:,2] = error_diffusion(img[:,:,2], kernel)
-    cv2.imwrite('o-'+label+'-1.png', img)
+    img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+    cv2.imwrite('o-'+label+'-1_mc.png', error_diffusion(img, kernel))
     
-    img = cv2.imread(img_path)
-    img[:,:,0] = error_diffusion(img[:,:,0], kernel, alternate=True)
-    img[:,:,1] = error_diffusion(img[:,:,1], kernel, alternate=True)
-    img[:,:,2] = error_diffusion(img[:,:,2], kernel, alternate=True)
-    cv2.imwrite('o-'+label+'-2.png', img)
+    img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+    cv2.imwrite('o-'+label+'-2_mc.png', error_diffusion(img, kernel, alternate=True))
 
 
 ########################## floyd and steinberg tests ##########################
