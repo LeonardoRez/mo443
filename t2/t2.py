@@ -6,7 +6,8 @@ glb = 0
 bern = 0
 nib = 0
 sauv = 0
-pms = 0
+pms_c = 0
+contr = 0
 
 def global_threshold(path,t):
     global glb
@@ -96,6 +97,7 @@ def pms(path, ws, k=0.25, R=0.5, p=2, q=10):
     global pms
 
     img = cv2.imread(path,-1)
+    img = img.astype(np.float)/255.0
     result = np.zeros_like(img)
     ws = int(ws/2)
     #print('window size: ',ws)
@@ -109,11 +111,30 @@ def pms(path, ws, k=0.25, R=0.5, p=2, q=10):
             else:
                 result[y,x] = 0
     
-    cv2.imwrite('pms/o-pms-'+str(pms)+'-'+str(ws*2+1)+'-'+str(k)+'-'+str(R).replace(',','')
-                                    +'-'+str(p)+'-'+str(q)+'.pgm',result.astype(np.uint8) )
+    cv2.imwrite('pms/o-pms-'+str(pms_c)+'-'+str(ws*2+1)+'-'+str(k).replace(',','')
+                                 +'-'+str(R).replace(',','')+'-'+str(p)+'-'+str(q)
+                                 +'.pgm',result.astype(np.uint8) )
     return result
 
+def contraste(path, ws):
+    global contr
 
+    img = cv2.imread(path,-1)
+    result = np.zeros_like(img)
+    ws = int(ws/2)
+    #print('window size: ',ws)
+    for y in range(img.shape[0]):
+        for x in range(img.shape[1]):        
+            n = img[max(y-ws,0):y+ws+1,max(x-ws,0):x+ws+1]
+            dmax = abs(n.max() - img[y,x])
+            dmin = abs(n.min() - img[y,x])
+            if dmax < dmin:
+                result[y,x] = 255
+            else:
+                result[y,x] = 0
+    nib += 1
+    cv2.imwrite('contraste/o-contr-'+str(contr)+'-'+str(ws*2+1)+'.pgm',result.astype(np.uint8) )
+    return result
 
 
 
@@ -159,9 +180,9 @@ def run(func, path):
         sauvola(path, 7 ,k=0.75)
         sauvola(path, 11,k=0.75)
         sauv += 1
-    elif func == 'bernsen':
-        global pms
-        pms = 0
+    elif func == 'pms':
+        global pms_c
+        pms_c = 0
         pms(path, 3)
         pms(path, 5)
         pms(path, 7)
@@ -186,15 +207,11 @@ def run(func, path):
         pms(path, 5 ,k=0.25, q = 15)
         pms(path, 7 ,k=0.25, q = 15)
         pms(path, 11,k=0.25, q = 15)
-    elif func == 'bernsen':
-        bernsen(path, 3)
-        bernsen(path, 5)
-        bernsen(path, 7)
-        bernsen(path, 11)
-        bernsen(path, 3 )
-        bernsen(path, 5 )
-        bernsen(path, 7 )
-        bernsen(path, 11)
+    elif func == 'contraste':
+        contraste(path, 3)
+        contraste(path, 5)
+        contraste(path, 7)
+        contraste(path, 11)
     elif func == 'bernsen':
         bernsen(path, 3)
         bernsen(path, 5)
