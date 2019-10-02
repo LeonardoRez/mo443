@@ -19,6 +19,8 @@ mediana_c = 0
 def plot(img, result_path):
     plt.clf()
     plt.hist(img.ravel(),256,[0,256])
+    plt.xlabel('Bright')
+    plt.xlabel('Quantity')
     plt.savefig('histograms/'+result_path[:-3]+'png')
 
 
@@ -27,9 +29,14 @@ def plot(img, result_path):
 def global_threshold(path,t):
     global glb
     img = cv2.imread(path, -1)
-    r = np.where(img > t, 255, 0)
-    cv2.imwrite('global/o-glob-'+str(glb)+'-'+str(t)+'.pgm',r)
-    return r
+    result = np.where(img > t, 255, 0)
+
+    result_path = 'global/o-glob-'+str(glb)+'-'+str(t)+'.pgm' 
+    cv2.imwrite( result_path,result.astype(np.uint8) )
+    cv2.imwrite( result_path[:-3]+'png',result.astype(np.uint8) )
+    plot(result, result_path.split('/')[1])    
+
+    return ( (result/255).sum() / (result.shape[0]*result.shape[1]) )
 
 
 
@@ -63,9 +70,11 @@ def bernsen(path, ws,mt=False):
     
     result_path = 'bernsen/o-ber-'+str(bern)+'-'+str(ws*2+1)+'-'+l+'.pgm' 
     cv2.imwrite( result_path,result.astype(np.uint8) )
+    cv2.imwrite( result_path[:-3]+'png',result.astype(np.uint8) )
     plot(result, result_path.split('/')[1])    
+
     #return black pixel proportion
-    return ( result.shape[0]*result.shape[1] - (result/255).sum() )
+    return ( (result/255).sum() / (result.shape[0]*result.shape[1]) )
 
 def niblack(path, ws,k=0.5):
     global nib
@@ -83,9 +92,12 @@ def niblack(path, ws,k=0.5):
                 result[y,x] = 255
             else:
                 result[y,x] = 0
-    cv2.imwrite('niblack/o-nib-'+str(nib)+'-'+str(ws*2+1)+'-'+str(k)+'.pgm',
-                                                    result.astype(np.uint8) )
-    return result
+    result_path = 'niblack/o-nib-'+str(nib)+'-'+str(ws*2+1)+'-'+str(k).replace('.','')+'.pgm'
+    cv2.imwrite( result_path,result.astype(np.uint8) )
+    cv2.imwrite( result_path[:-3]+'png',result.astype(np.uint8) )
+    plot(result, result_path.split('/')[1])    
+
+    return ( (result/255).sum() / (result.shape[0]*result.shape[1]) )
 
 def sauvola(path, ws, k=0.5, R=128):
     global sauv
@@ -103,17 +115,23 @@ def sauvola(path, ws, k=0.5, R=128):
                 result[y,x] = 255
             else:
                 result[y,x] = 0
-    cv2.imwrite('sauvola/o-sauv-'+str(sauv)+'-'+str(ws*2+1)+'-'+str(k)+'-'+str(R)+'.pgm',
-                                                                result.astype(np.uint8) )
-    return result
+    result_path = 'sauvola/o-sauv-'+str(sauv)+'-'+str(ws*2+1)+'-'+str(k).replace('.','')+'-'+str(R)+'.pgm'
+    cv2.imwrite( result_path,result.astype(np.uint8) )
+    cv2.imwrite( result_path[:-3]+'png',result.astype(np.uint8) )
+    plot(result, result_path.split('/')[1])    
+
+    return ( (result/255).sum() / (result.shape[0]*result.shape[1]) )
     
 def pms(path, ws, k=0.25, R=0.5, p=2, q=10):
+    
     global pms
+    ws = int(ws/2)
 
+    result_path = 'pms/o-pms-'+str(pms_c)+'-'+str(ws*2+1)+'-'+str(k).replace('.','')+'-'+str(R).replace('.','')+'-'+str(p)+'-'+str(q)+'.pgm'
+    print('processing pms ',result_path[4:])
     img = cv2.imread(path,-1)
     img = img.astype(np.float)/255.0
     result = np.zeros_like(img)
-    ws = int(ws/2)
     #print('window size: ',ws)
     for y in range(img.shape[0]):
         for x in range(img.shape[1]):        
@@ -125,10 +143,11 @@ def pms(path, ws, k=0.25, R=0.5, p=2, q=10):
             else:
                 result[y,x] = 0
     
-    cv2.imwrite('pms/o-pms-'+str(pms_c)+'-'+str(ws*2+1)+'-'+str(k).replace(',','')
-                                 +'-'+str(R).replace(',','')+'-'+str(p)+'-'+str(q)
-                                 +'.pgm',result.astype(np.uint8) )
-    return result
+    cv2.imwrite( result_path,result.astype(np.uint8) )
+    cv2.imwrite( result_path[:-3]+'png',result.astype(np.uint8) )
+    plot(result, result_path.split('/')[1])    
+
+    return ( (result/255).sum() / (result.shape[0]*result.shape[1]) )
 
 def contraste(path, ws, mt=False):
     global contr
@@ -155,8 +174,12 @@ def contraste(path, ws, mt=False):
                     result[y,x] = 255
                 else:
                     result[y,x] = 0
-    cv2.imwrite('contraste/o-contr-'+str(contr)+'-'+str(ws*2+1)+'-'+l+'.pgm',result.astype(np.uint8) )
-    return result
+    result_path = 'contraste/o-contr-'+str(contr)+'-'+str(ws*2+1)+'-'+l+'.pgm'
+    cv2.imwrite( result_path,result.astype(np.uint8) )
+    cv2.imwrite( result_path[:-3]+'png',result.astype(np.uint8) )
+    plot(result, result_path.split('/')[1])    
+
+    return ( (result/255).sum() / (result.shape[0]*result.shape[1]) )
 
 
 def media(path, ws, mt=False):
@@ -181,8 +204,13 @@ def media(path, ws, mt=False):
                     result[y,x] = 255
                 else:
                     result[y,x] = 0
-    cv2.imwrite('media/o-med-'+str(med)+'-'+str(ws*2+1)+'-'+l+'.pgm',result.astype(np.uint8) )
-    return result
+
+    result_path = 'media/o-med-'+str(med)+'-'+str(ws*2+1)+'-'+l+'.pgm'
+    cv2.imwrite( result_path,result.astype(np.uint8) )
+    cv2.imwrite( result_path[:-3]+'png',result.astype(np.uint8) )
+    plot(result, result_path.split('/')[1])    
+
+    return ( (result/255).sum() / (result.shape[0]*result.shape[1]) )
 
 def mediana(path, ws, mt=False):
     global mediana_c
@@ -206,167 +234,166 @@ def mediana(path, ws, mt=False):
                     result[y,x] = 255
                 else:
                     result[y,x] = 0
-    cv2.imwrite('mediana/o-med-'+str(mediana_c)+'-'+str(ws*2+1)+'-'+l+
-                                      '.pgm',result.astype(np.uint8) )
-    return result
+
+    result_path = 'mediana/o-med-'+str(mediana_c)+'-'+str(ws*2+1)+'-'+l+'.pgm'
+    cv2.imwrite( result_path,result.astype(np.uint8) )
+    cv2.imwrite( result_path[:-3]+'png',result.astype(np.uint8) )
+    plot(result, result_path.split('/')[1])    
+
+    return ( (result/255).sum() / (result.shape[0]*result.shape[1]) )
 
 
 def run(func, path):
     if func == 'bernsen':
-        global bern
-        bernsen(path, 3)
-        bernsen(path, 5)
-        bernsen(path, 7)
-        bernsen(path, 11)
-        bernsen(path, 25)
-        bernsen(path, 3 , mt=True)
-        bernsen(path, 5 , mt=True)
-        bernsen(path, 7 , mt=True)
-        bernsen(path, 11, mt=True)
-        bernsen(path, 25, mt=True)
+        global bern        
+        print('\tbernsen: ', bernsen(path, 3))
+        print('\tbernsen: ', bernsen(path, 5))
+        print('\tbernsen: ', bernsen(path, 7))
+        print('\tbernsen: ', bernsen(path, 11))
+        print('\tbernsen: ', bernsen(path, 25))
+        print('\tbernsen: ', bernsen(path, 3 , mt=True))
+        print('\tbernsen: ', bernsen(path, 5 , mt=True))
+        print('\tbernsen: ', bernsen(path, 7 , mt=True))
+        print('\tbernsen: ', bernsen(path, 11, mt=True))
+        print('\tbernsen: ', bernsen(path, 25, mt=True))
         bern += 1
     elif func == 'niblack':
         global nib
-        niblack(path, 3)
-        niblack(path, 5)
-        niblack(path, 7)
-        niblack(path, 11)
-        niblack(path, 25)
-        niblack(path, 3 ,k=0.25)
-        niblack(path, 5 ,k=0.25)
-        niblack(path, 7 ,k=0.25)
-        niblack(path, 11,k=0.25)
-        niblack(path, 25,k=0.25)
-        niblack(path, 3 ,k=0.75)
-        niblack(path, 5 ,k=0.75)
-        niblack(path, 7 ,k=0.75)
-        niblack(path, 11,k=0.75)
-        niblack(path, 25,k=0.75)
+        print('\tniblack: ', niblack(path, 3        ))
+        print('\tniblack: ', niblack(path, 5        ))
+        print('\tniblack: ', niblack(path, 7        ))
+        print('\tniblack: ', niblack(path, 11       ))
+        print('\tniblack: ', niblack(path, 25       ))
+        print('\tniblack: ', niblack(path, 3 ,k=0.25))
+        print('\tniblack: ', niblack(path, 5 ,k=0.25))
+        print('\tniblack: ', niblack(path, 7 ,k=0.25))
+        print('\tniblack: ', niblack(path, 11,k=0.25))
+        print('\tniblack: ', niblack(path, 25,k=0.25))
+        print('\tniblack: ', niblack(path, 3 ,k=0.75))
+        print('\tniblack: ', niblack(path, 5 ,k=0.75))
+        print('\tniblack: ', niblack(path, 7 ,k=0.75))
+        print('\tniblack: ', niblack(path, 11,k=0.75))
+        print('\tniblack: ', niblack(path, 25,k=0.75))
         nib += 1
     elif func == 'sauvola':
         global sauv
-        sauvola(path, 3)
-        sauvola(path, 5)
-        sauvola(path, 7)
-        sauvola(path, 11)
-        sauvola(path, 25)
-        sauvola(path, 3 ,k=0.25)
-        sauvola(path, 5 ,k=0.25)
-        sauvola(path, 7 ,k=0.25)
-        sauvola(path, 11,k=0.25)
-        sauvola(path, 25,k=0.25)
-        sauvola(path, 3 ,k=0.75)
-        sauvola(path, 5 ,k=0.75)
-        sauvola(path, 7 ,k=0.75)
-        sauvola(path, 11,k=0.75)
-        sauvola(path, 25,k=0.75)
+        print('\tsauvola: ', sauvola(path, 3         ))
+        print('\tsauvola: ', sauvola(path, 5         ))
+        print('\tsauvola: ', sauvola(path, 7         ))
+        print('\tsauvola: ', sauvola(path, 11        ))
+        print('\tsauvola: ', sauvola(path, 25        ))
+        print('\tsauvola: ', sauvola(path, 3 ,k=0.25 ))
+        print('\tsauvola: ', sauvola(path, 5 ,k=0.25 ))
+        print('\tsauvola: ', sauvola(path, 7 ,k=0.25 ))
+        print('\tsauvola: ', sauvola(path, 11,k=0.25 ))
+        print('\tsauvola: ', sauvola(path, 25,k=0.25 ))
+        print('\tsauvola: ', sauvola(path, 3 ,k=0.75 ))
+        print('\tsauvola: ', sauvola(path, 5 ,k=0.75 ))
+        print('\tsauvola: ', sauvola(path, 7 ,k=0.75 ))
+        print('\tsauvola: ', sauvola(path, 11,k=0.75 ))
+        print('\tsauvola: ', sauvola(path, 25,k=0.75 ))
         sauv += 1
     elif func == 'pms':
         global pms_c
-        pms(path, 3)
-        pms(path, 5)
-        pms(path, 7)
-        pms(path, 11)
-        pms(path, 25)
-        pms(path, 3 ,k=0.25)
-        pms(path, 5 ,k=0.25)
-        pms(path, 7 ,k=0.25)
-        pms(path, 11,k=0.25)
-        pms(path, 25,k=0.25)
-        pms(path, 3 ,k=0.75, p=1)
-        pms(path, 5 ,k=0.75, p=1)
-        pms(path, 7 ,k=0.75, p=1)
-        pms(path, 11,k=0.75, p=1)
-        pms(path, 25,k=0.75, p=1)
-        pms(path, 3 ,k=0.25, p=3)
-        pms(path, 5 ,k=0.25, p=3)
-        pms(path, 7 ,k=0.25, p=3)
-        pms(path, 11,k=0.25, p=3)
-        pms(path, 25,k=0.25, p=3)
-        pms(path, 3 ,k=0.75, q = 5)
-        pms(path, 5 ,k=0.75, q = 5)
-        pms(path, 7 ,k=0.75, q = 5)
-        pms(path, 11,k=0.75, q = 5)
-        pms(path, 25,k=0.75, q = 5)
-        pms(path, 3 ,k=0.25, q = 15)
-        pms(path, 5 ,k=0.25, q = 15)
-        pms(path, 7 ,k=0.25, q = 15)
-        pms(path, 11,k=0.25, q = 15)
-        pms(path, 25,k=0.25, q = 15)
+        print('\tpms: ', pms(path, 3                 ))
+        print('\tpms: ', pms(path, 5                 ))
+        print('\tpms: ', pms(path, 7                 ))
+        print('\tpms: ', pms(path, 11                ))
+        print('\tpms: ', pms(path, 25                ))
+        print('\tpms: ', pms(path, 3 ,k=0.125        ))
+        print('\tpms: ', pms(path, 5 ,k=0.125        ))
+        print('\tpms: ', pms(path, 7 ,k=0.125        ))
+        print('\tpms: ', pms(path, 11,k=0.125        ))
+        print('\tpms: ', pms(path, 25,k=0.125        ))
+        print('\tpms: ', pms(path, 3 ,k=0.5, p=1     ))
+        print('\tpms: ', pms(path, 5 ,k=0.5, p=1     ))
+        print('\tpms: ', pms(path, 7 ,k=0.5, p=1     ))
+        print('\tpms: ', pms(path, 11,k=0.5, p=1     ))
+        print('\tpms: ', pms(path, 25,k=0.5, p=1     ))
+        print('\tpms: ', pms(path, 3 ,k=0.125, p=3   ))
+        print('\tpms: ', pms(path, 5 ,k=0.125, p=3   ))
+        print('\tpms: ', pms(path, 7 ,k=0.125, p=3   ))
+        print('\tpms: ', pms(path, 11,k=0.125, p=3   ))
+        print('\tpms: ', pms(path, 25,k=0.125, p=3   ))
+        print('\tpms: ', pms(path, 3 ,k=0.5, q = 5   ))
+        print('\tpms: ', pms(path, 5 ,k=0.5, q = 5   ))
+        print('\tpms: ', pms(path, 7 ,k=0.5, q = 5   ))
+        print('\tpms: ', pms(path, 11,k=0.5, q = 5   ))
+        print('\tpms: ', pms(path, 25,k=0.5, q = 5   ))
+        print('\tpms: ', pms(path, 3 ,k=0.125, q = 15))
+        print('\tpms: ', pms(path, 5 ,k=0.125, q = 15))
+        print('\tpms: ', pms(path, 7 ,k=0.125, q = 15))
+        print('\tpms: ', pms(path, 11,k=0.125, q = 15))
+        print('\tpms: ', pms(path, 25,k=0.125, q = 15))
         pms_c += 1
     elif func == 'contraste':
         global contr
-        contraste(path, 3)
-        contraste(path, 5)
-        contraste(path, 7)
-        contraste(path, 11)
-        contraste(path, 25)
-        contraste(path, 3 , mt=True)
-        contraste(path, 5 , mt=True)
-        contraste(path, 7 , mt=True)
-        contraste(path, 11, mt=True)
-        contraste(path, 25, mt=True)
+        print('\tcontraste: ', contraste(path, 3          ))
+        print('\tcontraste: ', contraste(path, 5          ))
+        print('\tcontraste: ', contraste(path, 7          ))
+        print('\tcontraste: ', contraste(path, 11         ))
+        print('\tcontraste: ', contraste(path, 25         ))
+        print('\tcontraste: ', contraste(path, 3 , mt=True))
+        print('\tcontraste: ', contraste(path, 5 , mt=True))
+        print('\tcontraste: ', contraste(path, 7 , mt=True))
+        print('\tcontraste: ', contraste(path, 11, mt=True))
+        print('\tcontraste: ', contraste(path, 25, mt=True))
         contr += 1
     elif func == 'media':
         global med
-        media(path, 3)
-        media(path, 5)
-        media(path, 7)
-        media(path, 11)
-        media(path, 25)
-        media(path, 3 , mt=True)
-        media(path, 5 , mt=True)
-        media(path, 7 , mt=True)
-        media(path, 11, mt=True)
-        media(path, 25, mt=True)
+        print('\tmedia: ', media(path, 3          ))
+        print('\tmedia: ', media(path, 5          ))
+        print('\tmedia: ', media(path, 7          ))
+        print('\tmedia: ', media(path, 11         ))
+        print('\tmedia: ', media(path, 25         ))
+        print('\tmedia: ', media(path, 3 , mt=True))
+        print('\tmedia: ', media(path, 5 , mt=True))
+        print('\tmedia: ', media(path, 7 , mt=True))
+        print('\tmedia: ', media(path, 11, mt=True))
+        print('\tmedia: ', media(path, 25, mt=True))
         med += 1
     elif func == 'mediana':
         global mediana_c
-        mediana(path, 3)
-        mediana(path, 5)
-        mediana(path, 7)
-        mediana(path, 11)
-        mediana(path, 25)
-        mediana(path, 3 , mt=True)
-        mediana(path, 5 , mt=True)
-        mediana(path, 7 , mt=True)
-        mediana(path, 11, mt=True)
-        mediana(path, 25, mt=True)
+        print('\tmediana: ', mediana(path, 3          ))
+        print('\tmediana: ', mediana(path, 5          ))
+        print('\tmediana: ', mediana(path, 7          ))
+        print('\tmediana: ', mediana(path, 11         ))
+        print('\tmediana: ', mediana(path, 25         ))
+        print('\tmediana: ', mediana(path, 3 , mt=True))
+        print('\tmediana: ', mediana(path, 5 , mt=True))
+        print('\tmediana: ', mediana(path, 7 , mt=True))
+        print('\tmediana: ', mediana(path, 11, mt=True))
+        print('\tmediana: ', mediana(path, 25, mt=True))
         mediana_c += 1
     elif func == 'global_threshold':
         global glb
-        global_threshold(path, 255*0.5)
-        global_threshold(path, 255*0.25)
-        global_threshold(path, 255*0.33)
-        global_threshold(path, 255*0.66)
-        global_threshold(path, 255*0.75)
+        print('\tglobal_threshold: ', global_threshold(path, 255*0.5 ))
+        print('\tglobal_threshold: ', global_threshold(path, 255*0.25))
+        print('\tglobal_threshold: ', global_threshold(path, 255*0.33))
+        print('\tglobal_threshold: ', global_threshold(path, 255*0.66))
+        print('\tglobal_threshold: ', global_threshold(path, 255*0.75))
         glb+=1
 
 
 
 
 paths = ['baboon.pgm','fiducial.pgm','peppers.pgm','retina.pgm','sonnet.pgm','wedge.pgm']
-for path in paths:
-    print('\n\nprocessing image ',path)
-    print('processing global for ',path)
-    run('global_threshold', path)
-    print('processing bernsen for ',path)
-    run('bernsen', path)
-    print('processing niblack for ',path)
-    run('niblack', path)
-    print('processing sauvola for ',path)
-    run('sauvola', path)
-    print('processing pms for ',path)
-    run('pms', path)
-    print('processing contraste for ',path)
-    run('contraste', path)
-    print('processing media for ',path)
-    run('media', path)
-    print('processing mediana for ',path)
-    run('mediana', path)
+methods = ['global_threshold','contraste','media','mediana','pms','bernsen','niblack','sauvola']
+
+#bp_counter = np.zeros( (len(paths), len(methods) ) 
+
+#for path in paths:
+#    print('\n\nProcessing image ', path)
+#    for m in methods:
+#        print('processing',m,' for ',path)
+#        run(m,path)
 
 
-
+for m in methods:
+    print('\n\nProcessing method ', m)
+    for path in paths:
+        print('processing',m,' for ',path)
+        run(m,path)
 
 
 
