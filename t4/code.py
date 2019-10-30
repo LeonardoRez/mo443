@@ -59,6 +59,8 @@ def hide_string(img, string, bit_plain=0, store_path = 'string_stored.png'):
     if max_chars < len(string):
         print('the image can\'t store the whole content')
 
+    # adding a end char to the string
+
     #bit sequence with all bits of the string
     bs = []
     for s in string:
@@ -66,8 +68,19 @@ def hide_string(img, string, bit_plain=0, store_path = 'string_stored.png'):
     bs = np.array(bs)
     bs.resize(img.shape)
 
+    # creates a mask to wipe the bit_plane but just until the pixel needed to store the characters
+    #'''
+    mask = np.ones(len(string)*8, dtype='uint8')
+    mask.resize(img.shape)
+    mask = (mask)*2**bit_plain
     # wipe the right bit of each pixel channel
-    img = np.bitwise_and(img,~(2**bit_plain))
+    img = np.bitwise_and(img,~mask)
+    # '''
+
+    # wipe the right bit of each pixel channel without the mask
+    #img = np.bitwise_and(img,~(2**bit_plain))
+    
+
     # store the string bits on channels
     img = np.bitwise_or(img, bs<<bit_plain)
 
