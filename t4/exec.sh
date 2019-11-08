@@ -12,7 +12,7 @@ python uncode.py coded/result3.png 2 output/o-3.txt
 python code.py watch.png input/i-4.txt 1 coded/result4.png
 python uncode.py coded/result4.png 1 output/o-4.txt
 
-python code.py watch.png input/i-1.txt 6 coded/result5.png
-python uncode.py coded/result5.png 6 output/o-5.txt
+python code.py watch.png input/i-1.txt 2 coded/result5.png
+python uncode.py coded/result5.png 2 output/o-5.txt
 
 

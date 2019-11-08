@@ -60,6 +60,7 @@ def hide_string(img, string, bit_plain=0, store_path = 'string_stored.png'):
         print('the image can\'t store the whole content')
 
     # adding a end char to the string
+    string += '\0'
 
     #bit sequence with all bits of the string
     bs = []
